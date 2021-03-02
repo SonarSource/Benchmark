@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/pathtraver-01/BenchmarkTest01117")
 public class BenchmarkTest01117 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -39,16 +39,16 @@ public class BenchmarkTest01117 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		String param = "";
 		java.util.Enumeration<String> names = request.getHeaderNames();
 		while (names.hasMoreElements()) {
 			String name = (String) names.nextElement();
-			
+
 			if(org.owasp.benchmark.helpers.Utils.commonHeaders.contains(name)){
 				continue;
 			}
-			
+
 			java.util.Enumeration<String> values = request.getHeaders(name);
 			if (values != null && values.hasMoreElements()) {
 				param = name;
@@ -58,20 +58,20 @@ public class BenchmarkTest01117 extends HttpServlet {
 		// Note: We don't URL decode header names because people don't normally do that
 
 		String bar = new Test().doSomething(request, param);
-		
+
 		String fileName = null;
 		java.io.FileOutputStream fos = null;
 
 		try {
 			// Create the file first so the test won't throw an exception if it doesn't exist.
-			// Note: Don't actually do this because this method signature could cause a tool to find THIS file constructor 
+			// Note: Don't actually do this because this method signature could cause a tool to find THIS file constructor
 			// as a vuln, rather than the File signature we are trying to actually test.
 			// If necessary, just run the benchmark twice. The 1st run should create all the necessary files.
 			//new java.io.File(org.owasp.benchmark.helpers.Utils.testfileDir + bar).createNewFile();
-			
+
 			fileName = org.owasp.benchmark.helpers.Utils.testfileDir + bar;
-	
-	
+
+
 	        java.io.FileInputStream fileInputStream = new java.io.FileInputStream(fileName);
 	        java.io.FileDescriptor fd = fileInputStream.getFD();
 	        fos = new java.io.FileOutputStream(fd);
@@ -94,15 +94,15 @@ public class BenchmarkTest01117 extends HttpServlet {
 		}
 	}  // end doPost
 
-	
+
     private class Test {
 
         public String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
 
             return bar;

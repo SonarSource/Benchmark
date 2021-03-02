@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/hash-01/BenchmarkTest01164")
 public class BenchmarkTest01164 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -39,19 +39,19 @@ public class BenchmarkTest01164 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		String param = "";
 		java.util.Enumeration<String> headers = request.getHeaders("BenchmarkTest01164");
-		
+
 		if (headers != null && headers.hasMoreElements()) {
 			param = headers.nextElement(); // just grab first element
 		}
-		
+
 		// URL Decode the header value since req.getHeaders() doesn't. Unlike req.getParameters().
 		param = java.net.URLDecoder.decode(param, "UTF-8");
 
 		String bar = new Test().doSomething(request, param);
-		
+
 		java.security.Provider[] provider = java.security.Security.getProviders();
 		java.security.MessageDigest md;
 
@@ -75,9 +75,9 @@ public class BenchmarkTest01164 extends HttpServlet {
 					return;
 				}
 				input = java.util.Arrays.copyOf(strInput, i);
-			}			
+			}
 			md.update(input);
-			
+
 			byte[] result = md.digest();
 			java.io.File fileTarget = new java.io.File(
 					new java.io.File(org.owasp.benchmark.helpers.Utils.testfileDir),"passwordFile.txt");
@@ -101,15 +101,15 @@ public class BenchmarkTest01164 extends HttpServlet {
 );
 	}  // end doPost
 
-	
+
     private class Test {
 
         public String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
 
             return bar;

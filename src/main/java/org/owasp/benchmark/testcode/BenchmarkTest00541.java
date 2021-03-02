@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/xss-00/BenchmarkTest00541")
 public class BenchmarkTest00541 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -39,12 +39,12 @@ public class BenchmarkTest00541 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		String param = "";
 		boolean flag = true;
 		java.util.Enumeration<String> names = request.getParameterNames();
 		while (names.hasMoreElements() && flag) {
-			String name = (String) names.nextElement();		    	
+			String name = (String) names.nextElement();
 			String[] values = request.getParameterValues(name);
 			if (values != null) {
 				for(int i=0;i<values.length && flag; i++){
@@ -56,18 +56,18 @@ public class BenchmarkTest00541 extends HttpServlet {
 				}
 			}
 		}
-		
-		
+
+
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-		
-		
+
+
 response.setHeader("X-XSS-Protection", "0");
 		Object[] obj = { "a", "b" };
 		response.getWriter().format(java.util.Locale.US,bar,obj);
 	}
-	
+
 }

@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/sqli-01/BenchmarkTest00677")
 public class BenchmarkTest00677 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -39,19 +39,19 @@ public class BenchmarkTest00677 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		org.owasp.benchmark.helpers.SeparateClassRequest scr = new org.owasp.benchmark.helpers.SeparateClassRequest( request );
 		String param = scr.getTheParameter("BenchmarkTest00677");
 		if (param == null) param = "";
-		
-		
+
+
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-		
-		
+
+
  		String sql = "SELECT * from USERS where USERNAME='foo' and PASSWORD='" + bar + "'";
  		try {
 			java.util.List<String> results = org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.query(sql,  new org.springframework.jdbc.core.RowMapper<String>() {
@@ -79,7 +79,7 @@ public class BenchmarkTest00677 extends HttpServlet {
 			}
 		} catch (org.springframework.dao.EmptyResultDataAccessException e) {
 			response.getWriter().println(
-				"No results returned for query: " + org.owasp.esapi.ESAPI.encoder().encodeForHTML(sql) 
+				"No results returned for query: " + org.owasp.esapi.ESAPI.encoder().encodeForHTML(sql)
 			);
 		} catch (org.springframework.dao.DataAccessException e) {
 			if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {
@@ -90,5 +90,5 @@ public class BenchmarkTest00677 extends HttpServlet {
 			else throw new ServletException(e);
 		}
 	}
-	
+
 }

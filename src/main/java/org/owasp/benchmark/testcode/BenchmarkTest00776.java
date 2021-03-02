@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/crypto-01/BenchmarkTest00776")
 public class BenchmarkTest00776 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -39,7 +39,7 @@ public class BenchmarkTest00776 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		String queryString = request.getQueryString();
 		String paramval = "BenchmarkTest00776"+"=";
 		int paramLoc = -1;
@@ -48,7 +48,7 @@ public class BenchmarkTest00776 extends HttpServlet {
 			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest00776" + "' in query string.");
 			return;
 		}
-		
+
 		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest00776" param is last parameter in query string.
 		// And then check to see if its in the middle of the query string and if so, trim off what comes after.
 		int ampersandLoc = queryString.indexOf("&", paramLoc);
@@ -56,15 +56,15 @@ public class BenchmarkTest00776 extends HttpServlet {
 			param = queryString.substring(paramLoc + paramval.length(), ampersandLoc);
 		}
 		param = java.net.URLDecoder.decode(param, "UTF-8");
-		
-		
+
+
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-		
-		
+
+
 		// Code based on example from:
 		// http://examples.javacodegeeks.com/core-java/crypto/encrypt-decrypt-file-stream-with-des/
 	    // 16-byte initialization vector
@@ -76,15 +76,15 @@ public class BenchmarkTest00776 extends HttpServlet {
 //	    };
 	    java.security.SecureRandom random = new java.security.SecureRandom();
 		byte[] iv = random.generateSeed(16);
-	    
+
 		try {
 			javax.crypto.Cipher c = javax.crypto.Cipher.getInstance("AES/CBC/PKCS5PADDING", java.security.Security.getProvider("SunJCE"));
-            
+
             // Prepare the cipher to encrypt
             javax.crypto.SecretKey key = javax.crypto.KeyGenerator.getInstance("AES").generateKey();
             java.security.spec.AlgorithmParameterSpec paramSpec = new javax.crypto.spec.IvParameterSpec(iv);
             c.init(javax.crypto.Cipher.ENCRYPT_MODE, key, paramSpec);
-			
+
 			// encrypt and store the results
 			byte[] input = { (byte)'?' };
 			Object inputParam = bar;
@@ -101,7 +101,7 @@ public class BenchmarkTest00776 extends HttpServlet {
 				input = java.util.Arrays.copyOf(strInput, i);
 			}
 			byte[] result = c.doFinal(input);
-			
+
 			java.io.File fileTarget = new java.io.File(
 					new java.io.File(org.owasp.benchmark.helpers.Utils.testfileDir),"passwordFile.txt");
 			java.io.FileWriter fw = new java.io.FileWriter(fileTarget,true); //the true will append the new data
@@ -111,7 +111,7 @@ public class BenchmarkTest00776 extends HttpServlet {
 "Sensitive value: '" + org.owasp.esapi.ESAPI.encoder().encodeForHTML(new String(input)) + "' encrypted and stored<br/>"
 );
 
-			
+
 		} catch (java.security.NoSuchAlgorithmException e) {
 			response.getWriter().println(
 "Problem executing crypto - javax.crypto.Cipher.getInstance(java.lang.String,java.security.Provider) Test Case"
@@ -154,5 +154,5 @@ e.printStackTrace(response.getWriter());
 );
 
 	}
-	
+
 }

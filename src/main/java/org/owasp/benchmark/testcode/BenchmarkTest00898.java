@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/weakrand-01/BenchmarkTest00898")
 public class BenchmarkTest00898 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -39,18 +39,18 @@ public class BenchmarkTest00898 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		org.owasp.benchmark.helpers.SeparateClassRequest scr = new org.owasp.benchmark.helpers.SeparateClassRequest( request );
 		String param = scr.getTheValue("BenchmarkTest00898");
-		
-		
+
+
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-		
-		
+
+
 		byte[] bytes = new byte[10];
 		new java.util.Random().nextBytes(bytes);
         String rememberMeKey = org.owasp.esapi.ESAPI.encoder().encodeForBase64(bytes, true);
@@ -59,9 +59,9 @@ public class BenchmarkTest00898 extends HttpServlet {
 		String fullClassName = this.getClass().getName();
 		String testCaseNumber = fullClassName.substring(fullClassName.lastIndexOf('.')+1+"BenchmarkTest".length());
 		user+= testCaseNumber;
-		
+
 		String cookieName = "rememberMe" + testCaseNumber;
-		
+
 		boolean foundUser = false;
 		javax.servlet.http.Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
@@ -74,22 +74,22 @@ public class BenchmarkTest00898 extends HttpServlet {
 				}
 			}
 		}
-		
+
 		if (foundUser) {
 			response.getWriter().println(
 "Welcome back: " + user + "<br/>"
 );
-			
-		} else {			
+
+		} else {
 			javax.servlet.http.Cookie rememberMe = new javax.servlet.http.Cookie(cookieName, rememberMeKey);
 			rememberMe.setSecure(true);
 //			rememberMe.setPath("/benchmark/" + this.getClass().getSimpleName());
-			rememberMe.setPath(request.getRequestURI()); // i.e., set path to JUST this servlet 
+			rememberMe.setPath(request.getRequestURI()); // i.e., set path to JUST this servlet
 														 // e.g., /benchmark/sql-01/BenchmarkTest01001
 			request.getSession().setAttribute(cookieName, rememberMeKey);
 			response.addCookie(rememberMe);
 			response.getWriter().println(
-				user + " has been remembered with cookie: " + rememberMe.getName() 
+				user + " has been remembered with cookie: " + rememberMe.getName()
 					+ " whose value is: " + rememberMe.getValue() + "<br/>"
 			);
 		}
@@ -98,5 +98,5 @@ public class BenchmarkTest00898 extends HttpServlet {
 		"Weak Randomness Test java.util.Random.nextBytes() executed"
 		);
 	}
-	
+
 }
