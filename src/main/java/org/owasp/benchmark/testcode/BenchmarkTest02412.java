@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/cmdi-02/BenchmarkTest02412")
 public class BenchmarkTest02412 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -45,7 +45,7 @@ public class BenchmarkTest02412 extends HttpServlet {
 		if (param == null) param = "";
 
 		String bar = doSomething(request, param);
-		
+
 		String a1 = "";
 		String a2 = "";
 		String osName = System.getProperty("os.name");
@@ -61,7 +61,7 @@ public class BenchmarkTest02412 extends HttpServlet {
 		ProcessBuilder pb = new ProcessBuilder();
 
 		pb.command(args);
-		
+
 		try {
 			Process p = pb.start();
 			org.owasp.benchmark.helpers.Utils.printOSCommandResults(p, response);
@@ -70,16 +70,16 @@ public class BenchmarkTest02412 extends HttpServlet {
             throw new ServletException(e);
 		}
 	}  // end doPost
-	
-		
+
+
 	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-	
-		return bar;	
+
+		return bar;
 	}
 }

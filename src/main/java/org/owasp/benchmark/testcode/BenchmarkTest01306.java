@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/sqli-02/BenchmarkTest01306")
 public class BenchmarkTest01306 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -39,14 +39,14 @@ public class BenchmarkTest01306 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		String param = request.getParameter("BenchmarkTest01306");
 		if (param == null) param = "";
 
 		String bar = new Test().doSomething(request, param);
-		
+
 		String sql = "SELECT * from USERS where USERNAME=? and PASSWORD='"+ bar +"'";
-				
+
 		try {
 			java.sql.Connection connection = org.owasp.benchmark.helpers.DatabaseHelper.getSqlConnection();
 			java.sql.PreparedStatement statement = connection.prepareStatement( sql, new String[] {"Column1","Column2"} );
@@ -64,15 +64,15 @@ public class BenchmarkTest01306 extends HttpServlet {
 		}
 	}  // end doPost
 
-	
+
     private class Test {
 
         public String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
 
             return bar;

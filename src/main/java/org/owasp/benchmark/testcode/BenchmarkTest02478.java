@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/hash-02/BenchmarkTest02478")
 public class BenchmarkTest02478 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -47,7 +47,7 @@ public class BenchmarkTest02478 extends HttpServlet {
 		else param = "";
 
 		String bar = doSomething(request, param);
-		
+
 		try {
 		    java.util.Properties benchmarkprops = new java.util.Properties();
 		    benchmarkprops.load(this.getClass().getClassLoader().getResourceAsStream("benchmark.properties"));
@@ -66,9 +66,9 @@ public class BenchmarkTest02478 extends HttpServlet {
 					return;
 				}
 				input = java.util.Arrays.copyOf(strInput, i);
-			}			
+			}
 			md.update(input);
-			
+
 			byte[] result = md.digest();
 			java.io.File fileTarget = new java.io.File(
 					new java.io.File(org.owasp.benchmark.helpers.Utils.testfileDir),"passwordFile.txt");
@@ -83,21 +83,21 @@ public class BenchmarkTest02478 extends HttpServlet {
 			System.out.println("Problem executing hash - TestCase");
 			throw new ServletException(e);
 		}
-		
+
 		response.getWriter().println(
 "Hash Test java.security.MessageDigest.getInstance(java.lang.String) executed"
 );
 	}  // end doPost
-	
-		
+
+
 	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-	
-		return bar;	
+
+		return bar;
 	}
 }

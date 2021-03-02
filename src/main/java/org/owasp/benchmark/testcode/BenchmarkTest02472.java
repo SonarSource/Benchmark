@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/ldapi-00/BenchmarkTest02472")
 public class BenchmarkTest02472 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -47,7 +47,7 @@ public class BenchmarkTest02472 extends HttpServlet {
 		else param = "";
 
 		String bar = doSomething(request, param);
-		
+
 	org.owasp.benchmark.helpers.LDAPManager ads = new org.owasp.benchmark.helpers.LDAPManager();
 	try {
 		response.setContentType("text/html");
@@ -56,10 +56,10 @@ public class BenchmarkTest02472 extends HttpServlet {
 		sc.setSearchScope(javax.naming.directory.SearchControls.SUBTREE_SCOPE);
 		String filter = "(&(objectclass=person))(|(uid="+bar+")(street={0}))";
 		Object[] filters = new Object[]{"The streetz 4 Ms bar"};
-		
+
 		javax.naming.directory.DirContext ctx = ads.getDirContext();
 		javax.naming.directory.InitialDirContext idc = (javax.naming.directory.InitialDirContext) ctx;
-		javax.naming.NamingEnumeration<javax.naming.directory.SearchResult> results = 
+		javax.naming.NamingEnumeration<javax.naming.directory.SearchResult> results =
 				idc.search(base, filter,filters, sc);
 		while (results.hasMore()) {
 			javax.naming.directory.SearchResult sr = (javax.naming.directory.SearchResult) results.next();
@@ -88,16 +88,16 @@ public class BenchmarkTest02472 extends HttpServlet {
 		}
     }
 	}  // end doPost
-	
-		
+
+
 	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-	
-		return bar;	
+
+		return bar;
 	}
 }

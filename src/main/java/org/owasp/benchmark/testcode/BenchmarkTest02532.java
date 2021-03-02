@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/sqli-05/BenchmarkTest02532")
 public class BenchmarkTest02532 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -47,9 +47,9 @@ public class BenchmarkTest02532 extends HttpServlet {
 		else param = "";
 
 		String bar = doSomething(request, param);
-		
+
 		String sql = "SELECT * from USERS where USERNAME=? and PASSWORD='"+ bar +"'";
-				
+
 		try {
 			java.sql.Connection connection = org.owasp.benchmark.helpers.DatabaseHelper.getSqlConnection();
 			java.sql.PreparedStatement statement = connection.prepareStatement( sql,
@@ -67,16 +67,16 @@ public class BenchmarkTest02532 extends HttpServlet {
 			else throw new ServletException(e);
 		}
 	}  // end doPost
-	
-		
+
+
 	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-	
-		return bar;	
+
+		return bar;
 	}
 }

@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/cmdi-00/BenchmarkTest00303")
 public class BenchmarkTest00303 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -39,31 +39,31 @@ public class BenchmarkTest00303 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		String param = "";
 		java.util.Enumeration<String> headers = request.getHeaders("BenchmarkTest00303");
-		
+
 		if (headers != null && headers.hasMoreElements()) {
 			param = headers.nextElement(); // just grab first element
 		}
-		
+
 		// URL Decode the header value since req.getHeaders() doesn't. Unlike req.getParameters().
 		param = java.net.URLDecoder.decode(param, "UTF-8");
-		
-		
+
+
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-		
-		
-		String cmd = "";	
+
+
+		String cmd = "";
 		String a1 = "";
 		String a2 = "";
 		String[] args = null;
 		String osName = System.getProperty("os.name");
-		
+
 		if (osName.indexOf("Windows") != -1) {
         	a1 = "cmd.exe";
         	a2 = "/c";
@@ -75,7 +75,7 @@ public class BenchmarkTest00303 extends HttpServlet {
         	cmd = org.owasp.benchmark.helpers.Utils.getOSCommandString("ping -c1");
         	args = new String[]{a1, a2, cmd, bar};
         }
-		
+
 		Runtime r = Runtime.getRuntime();
 
 		try {
@@ -89,5 +89,5 @@ public class BenchmarkTest00303 extends HttpServlet {
 			return;
 		}
 	}
-	
+
 }

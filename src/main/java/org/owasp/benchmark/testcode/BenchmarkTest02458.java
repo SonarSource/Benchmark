@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/crypto-02/BenchmarkTest02458")
 public class BenchmarkTest02458 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -47,7 +47,7 @@ public class BenchmarkTest02458 extends HttpServlet {
 		else param = "";
 
 		String bar = doSomething(request, param);
-		
+
 		// Code based on example from:
 		// http://examples.javacodegeeks.com/core-java/crypto/encrypt-decrypt-file-stream-with-des/
 	    // 8-byte initialization vector
@@ -57,15 +57,15 @@ public class BenchmarkTest02458 extends HttpServlet {
 //	    };
 	    java.security.SecureRandom random = new java.security.SecureRandom();
 		byte[] iv = random.generateSeed(8); // DES requires 8 byte keys
-		
+
 		try {
             javax.crypto.Cipher c = javax.crypto.Cipher.getInstance("DES/CBC/PKCS5PADDING", java.security.Security.getProvider("SunJCE"));
-            
+
             // Prepare the cipher to encrypt
             javax.crypto.SecretKey key = javax.crypto.KeyGenerator.getInstance("DES").generateKey();
             java.security.spec.AlgorithmParameterSpec paramSpec = new javax.crypto.spec.IvParameterSpec(iv);
             c.init(javax.crypto.Cipher.ENCRYPT_MODE, key, paramSpec);
-			
+
 			// encrypt and store the results
 			byte[] input = { (byte)'?' };
 			Object inputParam = bar;
@@ -82,7 +82,7 @@ public class BenchmarkTest02458 extends HttpServlet {
 				input = java.util.Arrays.copyOf(strInput, i);
 			}
 			byte[] result = c.doFinal( input );
-			
+
 			java.io.File fileTarget = new java.io.File(
 					new java.io.File(org.owasp.benchmark.helpers.Utils.testfileDir),"passwordFile.txt");
 			java.io.FileWriter fw = new java.io.FileWriter(fileTarget,true); //the true will append the new data
@@ -91,7 +91,7 @@ public class BenchmarkTest02458 extends HttpServlet {
 			response.getWriter().println(
 				"Sensitive value: '" + org.owasp.esapi.ESAPI.encoder().encodeForHTML(new String(input)) + "' encrypted and stored<br/>"
 			);
-			
+
 		} catch (java.security.NoSuchAlgorithmException e) {
 			response.getWriter().println(
 "Problem executing crypto - javax.crypto.Cipher.getInstance(java.lang.String,java.security.Provider) Test Case"
@@ -133,16 +133,16 @@ e.printStackTrace(response.getWriter());
 			"Crypto Test javax.crypto.Cipher.getInstance(java.lang.String,java.security.Provider) executed"
 		);
 	}  // end doPost
-	
-		
+
+
 	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-	
-		return bar;	
+
+		return bar;
 	}
 }

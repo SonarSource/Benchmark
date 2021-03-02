@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/crypto-00/BenchmarkTest00354")
 public class BenchmarkTest00354 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -39,18 +39,18 @@ public class BenchmarkTest00354 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		String param = request.getParameter("BenchmarkTest00354");
 		if (param == null) param = "";
-		
-		
+
+
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-		
-		
+
+
 		try {
 		    java.util.Properties benchmarkprops = new java.util.Properties();
 		    benchmarkprops.load(this.getClass().getClassLoader().getResourceAsStream("benchmark.properties"));
@@ -60,7 +60,7 @@ public class BenchmarkTest00354 extends HttpServlet {
             // Prepare the cipher to encrypt
             javax.crypto.SecretKey key = javax.crypto.KeyGenerator.getInstance("DES").generateKey();
             c.init(javax.crypto.Cipher.ENCRYPT_MODE, key);
-			
+
 			// encrypt and store the results
 			byte[] input = { (byte)'?' };
 			Object inputParam = bar;
@@ -77,7 +77,7 @@ public class BenchmarkTest00354 extends HttpServlet {
 				input = java.util.Arrays.copyOf(strInput, i);
 			}
 			byte[] result = c.doFinal(input);
-			
+
 			java.io.File fileTarget = new java.io.File(
 					new java.io.File(org.owasp.benchmark.helpers.Utils.testfileDir),"passwordFile.txt");
 			java.io.FileWriter fw = new java.io.FileWriter(fileTarget,true); //the true will append the new data
@@ -87,7 +87,7 @@ public class BenchmarkTest00354 extends HttpServlet {
 "Sensitive value: '" + org.owasp.esapi.ESAPI.encoder().encodeForHTML(new String(input)) + "' encrypted and stored<br/>"
 );
 
-			
+
 		} catch (java.security.NoSuchAlgorithmException e) {
 			response.getWriter().println(
 "Problem executing crypto - javax.crypto.Cipher.getInstance(java.lang.String,java.security.Provider) Test Case"
@@ -124,5 +124,5 @@ e.printStackTrace(response.getWriter());
 "Crypto Test javax.crypto.Cipher.getInstance(java.lang.String) executed"
 );
 	}
-	
+
 }

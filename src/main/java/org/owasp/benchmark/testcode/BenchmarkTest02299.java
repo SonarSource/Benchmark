@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(value="/ldapi-00/BenchmarkTest02299")
 public class BenchmarkTest02299 extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -44,7 +44,7 @@ public class BenchmarkTest02299 extends HttpServlet {
 		boolean flag = true;
 		java.util.Enumeration<String> names = request.getParameterNames();
 		while (names.hasMoreElements() && flag) {
-			String name = (String) names.nextElement();		    	
+			String name = (String) names.nextElement();
 			String[] values = request.getParameterValues(name);
 			if (values != null) {
 				for(int i=0;i<values.length && flag; i++){
@@ -58,7 +58,7 @@ public class BenchmarkTest02299 extends HttpServlet {
 		}
 
 		String bar = doSomething(request, param);
-		
+
 	org.owasp.benchmark.helpers.LDAPManager ads = new org.owasp.benchmark.helpers.LDAPManager();
 	try {
 			response.setContentType("text/html");
@@ -97,16 +97,16 @@ public class BenchmarkTest02299 extends HttpServlet {
 		}
     }
 	}  // end doPost
-	
-		
+
+
 	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar = "";
 		if (param != null) {
-			bar = new String( param.getBytes() );
-
+			bar = new String( org.apache.commons.codec.binary.Base64.decodeBase64(
+			org.apache.commons.codec.binary.Base64.encodeBase64( param.getBytes() ) ));
 		}
-	
-		return bar;	
+
+		return bar;
 	}
 }
